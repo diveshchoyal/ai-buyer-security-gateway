@@ -24,5 +24,9 @@ npm-debug.log*
 yarn-debug.log*
 dist/
 build/
+.output/
+.nitro/
+.wrangler/
+.tanstack/
 .temp/
 supabase/.temp/

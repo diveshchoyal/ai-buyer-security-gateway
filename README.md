@@ -54,16 +54,76 @@ Every financial action is:
 
 ---
 
+## Frontend (Fintech Security Dashboard)
+
+A React + Vite application providing full operational visibility and human oversight:
+
+- **Overview Dashboard**: Live metrics (Active Mandates, Approved/Blocked Decisions, Settled Spend, Realtime Activity).
+- **Product Catalog**: Live merchant catalog with prices read directly from PostgreSQL (client prices are display-only).
+- **Mandates Management**: Real-time tracking of spend caps, velocity limits, allowed categories, and remaining budgets.
+- **Transactions Ledger**: Complete history of authorized, settled, and failed transactions with provider references.
+- **Audit Trail**: Real-time append-only stream of policy authorizations, budget reservations, and payment settlements.
+- **Interactive Purchase Flow**: Live policy evaluation, atomic PostgreSQL gate execution, Razorpay test checkout, and fail-safe budget release on payment failure.
+
+---
+
+## Project Structure
+
+```
+razorpay/
+├── frontend/                     # React + Vite frontend dashboard
+│   ├── src/
+│   │   ├── components/           # UI components (PolicyCheck, AppShell, etc.)
+│   │   ├── hooks/                # Realtime subscriptions & state hooks
+│   │   ├── lib/                  # Supabase client, queries, types, and Razorpay
+│   │   └── routes/               # File-based routes (Overview, Products, Audit, etc.)
+│   ├── public/                   # Static assets
+│   ├── package.json              # Frontend dependencies
+│   └── vite.config.ts            # Vite configuration
+│
+├── supabase/                     # Supabase Edge Functions & configuration
+│   └── functions/
+│       ├── purchase-agent/       # Ingress validation & atomic authorization gate
+│       ├── verify-payment/       # Cryptographic signature verification & settlement
+│       └── _shared/              # CORS headers & Web Crypto Razorpay helper
+│
+├── schema.sql                    # PostgreSQL schema, RLS, functions & audit triggers
+├── README.md                     # Full-stack documentation
+├── .env.example                  # Environment configuration template
+└── .gitignore                    # Git ignore rules (protects credentials & build artifacts)
+```
+
+---
+
 ## Setup & Deployment
 
+### 1. Database & Edge Functions
 1. Copy `.env.example` to `.env`:
    ```bash
    cp .env.example .env
    ```
 2. Apply the PostgreSQL schema:
-   Execute [`schema.sql`](schema.sql) in your Supabase SQL editor or via the Supabase CLI migration pipeline.
+   Execute [`schema.sql`](schema.sql) in your Supabase SQL editor.
 3. Deploy Supabase Edge Functions:
    ```bash
    supabase functions deploy purchase-agent --no-verify-jwt
    supabase functions deploy verify-payment --no-verify-jwt
+   ```
+
+### 2. Frontend Development & Build
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   npm install
+   ```
+2. Configure frontend environment variables in `frontend/.env` or root `.env`:
+   ```env
+   VITE_SUPABASE_URL=https://your_project_ref_here.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_publishable_or_anon_key_here
+   VITE_RAZORPAY_KEY_ID=rzp_test_your_key_id_here
+   ```
+3. Run the development server or build for production:
+   ```bash
+   npm run dev       # Start local development server
+   npm run build     # Build production bundle
    ```
