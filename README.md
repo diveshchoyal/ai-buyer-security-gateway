@@ -37,6 +37,23 @@ Every financial action is:
 
 ---
 
+## Edge Functions (Payment Gateway Layer)
+
+- **`purchase-agent` (`/functions/v1/purchase-agent`)**:
+  - Secure entry point for AI Agent purchases.
+  - Accepts `{ mandate_id, product_id, idempotency_key }`.
+  - Invokes `authorize_purchase()` inside PostgreSQL.
+  - On policy rejection: fails closed, returns HTTP 403, and never invokes Razorpay.
+  - On policy approval: creates Razorpay order using server-side credentials and returns checkout parameters (`razorpay_order_id`, `amount_paise`, `currency`).
+  - Handles idempotent replays by returning existing order state without re-charging.
+- **`verify-payment` (`/functions/v1/verify-payment`)**:
+  - Server-side cryptographic HMAC-SHA256 signature verification.
+  - Compares client order ID against the authoritative database-stored `razorpay_order_id` (never trusts client order ID).
+  - Calls `record_payment_result()` on verified signature to finalize settlement (`paid` / `captured`).
+  - Implements clean failure path (`payment_failed: true`): transitions transaction to `failed`, safely releases budget reservation back to the mandate, and logs audit events.
+
+---
+
 ## Setup & Deployment
 
 1. Copy `.env.example` to `.env`:
@@ -45,3 +62,8 @@ Every financial action is:
    ```
 2. Apply the PostgreSQL schema:
    Execute [`schema.sql`](schema.sql) in your Supabase SQL editor or via the Supabase CLI migration pipeline.
+3. Deploy Supabase Edge Functions:
+   ```bash
+   supabase functions deploy purchase-agent --no-verify-jwt
+   supabase functions deploy verify-payment --no-verify-jwt
+   ```
