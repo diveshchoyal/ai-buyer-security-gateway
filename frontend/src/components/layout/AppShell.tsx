@@ -10,6 +10,7 @@ import {
   Menu,
   ShieldCheck,
   X,
+  Bot,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const nav = [
   { to: "/products", label: "Products", icon: Package },
   { to: "/mandates", label: "Mandates", icon: FileCheck2 },
   { to: "/transactions", label: "Transactions", icon: Receipt },
+  { to: "/agent-activity", label: "Agent Activity", icon: Bot },
   { to: "/audit", label: "Audit Trail", icon: ScrollText },
 ] as const;
 

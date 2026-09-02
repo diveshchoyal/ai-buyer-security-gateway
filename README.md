@@ -51,6 +51,48 @@ Every financial action is:
   - Compares client order ID against the authoritative database-stored `razorpay_order_id` (never trusts client order ID).
   - Calls `record_payment_result()` on verified signature to finalize settlement (`paid` / `captured`).
   - Implements clean failure path (`payment_failed: true`): transitions transaction to `failed`, safely releases budget reservation back to the mandate, and logs audit events.
+- **`agent-shopper` (`/functions/v1/agent-shopper`) — Autonomous AI Shopper**:
+  - AI decision layer positioned in front of the purchase authorization gate.
+  - Evaluates user goal and mandate constraints against the active catalog using an LLM, selecting at most one item to purchase or declining with clear justification.
+  - Submits purchase proposals to the authoritative `purchase-agent` gate, and orchestrates simulated settlements for demo orders.
+  - **Request Shape**:
+    ```json
+    {
+      "mandate_id": "10000000-0000-0000-0000-000000000001",
+      "goal": "Procure cloud compute instance within allowed categories",
+      "actor": "ai_agent:shopper" // Optional, defaults to "ai_agent:shopper"
+    }
+    ```
+  - **Response Shape**:
+    - *Purchase Attempt*:
+      ```json
+      {
+        "success": true,
+        "action": "purchase",
+        "agent_reason": "Selected Cloud Compute Standard meeting compute requirements within mandate budget.",
+        "gate_authorized": true,
+        "simulated": true,
+        "transaction_id": "16a41401-1742-4441-b314-aa197dd5f07d",
+        "product_id": "20000000-0000-0000-0000-000000000001",
+        "amount_paise": 40000
+      }
+      ```
+    - *Decline*:
+      ```json
+      {
+        "success": true,
+        "action": "decline",
+        "reason": "Goal asks for items not permitted in mandate allowed_categories.",
+        "mandate_id": "10000000-0000-0000-0000-000000000001"
+      }
+      ```
+  - **Environment Variables & Secrets**:
+    - `AGENT_LLM_API_KEY` (*Required*): API key for LLM inference (e.g. Groq API key).
+    - `AGENT_LLM_MODEL` (*Optional*): Model identifier (defaults to `llama-3.3-70b-versatile` via Groq).
+    - `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (*Required*): Supabase service credentials.
+  - **Database Migration Prerequisite**:
+    > [!IMPORTANT]
+    > The migration [`supabase/migrations/20260902000000_simulated_settlement.sql`](supabase/migrations/20260902000000_simulated_settlement.sql) adds the `p_simulated` parameter and `simulation_payment_succeeded` audit logging to `record_payment_result()`. **This migration must be applied to the database (not just committed)** before this function will work.
 
 ---
 
@@ -62,6 +104,7 @@ A React + Vite application providing full operational visibility and human overs
 - **Product Catalog**: Live merchant catalog with prices read directly from PostgreSQL (client prices are display-only).
 - **Mandates Management**: Real-time tracking of spend caps, velocity limits, allowed categories, and remaining budgets.
 - **Transactions Ledger**: Complete history of authorized, settled, and failed transactions with provider references.
+- **Agent Activity**: End-to-end trace of autonomous shopper decisions: agent reasoning (LLM proposal/decline) → security gate authorization → settlement outcome, with distinct badges distinguishing demo simulations from verified payments.
 - **Audit Trail**: Real-time append-only stream of policy authorizations, budget reservations, and payment settlements.
 - **Interactive Purchase Flow**: Live policy evaluation, atomic PostgreSQL gate execution, Razorpay test checkout, and fail-safe budget release on payment failure.
 
@@ -82,10 +125,13 @@ razorpay/
 │   └── vite.config.ts            # Vite configuration
 │
 ├── supabase/                     # Supabase Edge Functions & configuration
-│   └── functions/
-│       ├── purchase-agent/       # Ingress validation & atomic authorization gate
-│       ├── verify-payment/       # Cryptographic signature verification & settlement
-│       └── _shared/              # CORS headers & Web Crypto Razorpay helper
+│   ├── functions/
+│   │   ├── agent-shopper/        # Autonomous AI shopping decision maker (LLM)
+│   │   ├── purchase-agent/       # Ingress validation & atomic authorization gate
+│   │   ├── verify-payment/       # Cryptographic signature verification & settlement
+│   │   └── _shared/              # CORS headers & Web Crypto Razorpay helper
+│   └── migrations/               # Database migrations
+│       └── 20260902000000_simulated_settlement.sql # Simulation settlement parameter
 │
 ├── schema.sql                    # PostgreSQL schema, RLS, functions & audit triggers
 ├── README.md                     # Full-stack documentation

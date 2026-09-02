@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgentActivityRouteImport } from './routes/agent-activity'
 import { Route as AuditRouteImport } from './routes/audit'
 import { Route as MandatesRouteImport } from './routes/mandates'
 import { Route as ProductsRouteImport } from './routes/products'
@@ -20,6 +21,11 @@ import { Route as PurchaseProductIdRouteImport } from './routes/purchase.$produc
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentActivityRoute = AgentActivityRouteImport.update({
+  id: '/agent-activity',
+  path: '/agent-activity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuditRoute = AuditRouteImport.update({
@@ -55,6 +61,7 @@ const PurchaseProductIdRoute = PurchaseProductIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agent-activity': typeof AgentActivityRoute
   '/audit': typeof AuditRoute
   '/mandates': typeof MandatesRoute
   '/products': typeof ProductsRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agent-activity': typeof AgentActivityRoute
   '/audit': typeof AuditRoute
   '/mandates': typeof MandatesRoute
   '/products': typeof ProductsRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agent-activity': typeof AgentActivityRoute
   '/audit': typeof AuditRoute
   '/mandates': typeof MandatesRoute
   '/products': typeof ProductsRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agent-activity'
     | '/audit'
     | '/mandates'
     | '/products'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agent-activity'
     | '/audit'
     | '/mandates'
     | '/products'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/agent-activity'
     | '/audit'
     | '/mandates'
     | '/products'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentActivityRoute: typeof AgentActivityRoute
   AuditRoute: typeof AuditRoute
   MandatesRoute: typeof MandatesRoute
   ProductsRoute: typeof ProductsRoute
@@ -128,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agent-activity': {
+      id: '/agent-activity'
+      path: '/agent-activity'
+      fullPath: '/agent-activity'
+      preLoaderRoute: typeof AgentActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audit': {
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentActivityRoute: AgentActivityRoute,
   AuditRoute: AuditRoute,
   MandatesRoute: MandatesRoute,
   ProductsRoute: ProductsRoute,
