@@ -30,3 +30,5 @@ build/
 .tanstack/
 .temp/
 supabase/.temp/
+*.mp4
+*.webm
