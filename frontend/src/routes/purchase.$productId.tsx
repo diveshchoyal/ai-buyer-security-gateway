@@ -27,13 +27,13 @@ import { openCheckout } from "@/lib/razorpay";
 export const Route = createFileRoute("/purchase/$productId")({
   head: () => ({
     meta: [
-      { title: "Authorize purchase — AI Buyer Security Gateway" },
+      { title: "Authorize purchase — AegisBuy" },
       {
         name: "description",
         content:
           "Run mandate, category, limit and budget checks, then settle an authorized agent purchase in test mode.",
       },
-      { property: "og:title", content: "Authorize purchase — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Authorize purchase — AegisBuy" },
       {
         property: "og:description",
         content: "Policy checks and settlement for a single agent purchase.",
@@ -46,16 +46,16 @@ export const Route = createFileRoute("/purchase/$productId")({
 type Phase =
   | { kind: "idle" }
   | { kind: "authorizing" }
-  | { kind: "blocked"; reason: string; checks?: PolicyCheckItem[] }
+  | { kind: "blocked"; reason: string; checks?: PolicyCheckItem[] | undefined }
   | { kind: "paying" }
   | { kind: "verifying" }
   | { kind: "success"; message: string }
   | {
       kind: "failed";
       reason: string;
-      policyApproved?: boolean;
-      budgetReleased?: boolean;
-      amount?: number;
+      policyApproved?: boolean | undefined;
+      budgetReleased?: boolean | undefined;
+      amount?: number | undefined;
     };
 
 function PurchasePage() {
@@ -73,7 +73,9 @@ function PurchasePage() {
   const activeMandates = (mandates.data ?? []).filter(isMandateActive);
   const [mandateId, setMandateId] = useState<string | undefined>(undefined);
   const mandate =
-    (mandates.data ?? []).find((m) => m.id === mandateId) ?? activeMandates[0] ?? mandates.data?.[0];
+    (mandates.data ?? []).find((m) => m.id === mandateId) ??
+    activeMandates[0] ??
+    mandates.data?.[0];
 
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
 
@@ -140,7 +142,8 @@ function PurchasePage() {
       if (!isRazorpayConfigured) {
         setPhase({
           kind: "failed",
-          reason: "Payment checkout is not configured. Set VITE_RAZORPAY_KEY_ID to settle payments.",
+          reason:
+            "Payment checkout is not configured. Set VITE_RAZORPAY_KEY_ID to settle payments.",
         });
         return;
       }
@@ -232,7 +235,8 @@ function PurchasePage() {
               refresh();
               setPhase({
                 kind: "failed",
-                reason: "Checkout was closed before payment completed. The budget hold has been released.",
+                reason:
+                  "Checkout was closed before payment completed. The budget hold has been released.",
                 policyApproved: true,
                 budgetReleased: true,
                 amount: authorization.amount ?? product.price,
@@ -379,24 +383,34 @@ function PurchasePage() {
                   phase.policyApproved ? (
                     <div className="rounded-lg border border-amber-300 bg-amber-50/90 p-3.5 text-xs text-amber-950">
                       <div className="flex items-center justify-between border-b border-amber-200/80 pb-2 mb-2.5">
-                        <span className="font-semibold uppercase tracking-wider text-[11px] text-amber-900">Payment Outcome</span>
-                        <span className="font-medium px-2 py-0.5 rounded bg-amber-200/80 text-amber-950">Resilient Recovery</span>
+                        <span className="font-semibold uppercase tracking-wider text-[11px] text-amber-900">
+                          Payment Outcome
+                        </span>
+                        <span className="font-medium px-2 py-0.5 rounded bg-amber-200/80 text-amber-950">
+                          Resilient Recovery
+                        </span>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-center mb-3">
                         <div className="rounded border border-emerald-200 bg-white/90 p-2 shadow-xs">
-                          <span className="block text-[10px] font-semibold uppercase text-muted-foreground">Policy</span>
+                          <span className="block text-[10px] font-semibold uppercase text-muted-foreground">
+                            Policy
+                          </span>
                           <span className="font-bold text-emerald-700 flex items-center justify-center gap-1 mt-0.5">
                             <CheckCircle2 className="size-3.5" /> Approved
                           </span>
                         </div>
                         <div className="rounded border border-red-200 bg-white/90 p-2 shadow-xs">
-                          <span className="block text-[10px] font-semibold uppercase text-muted-foreground">Payment</span>
+                          <span className="block text-[10px] font-semibold uppercase text-muted-foreground">
+                            Payment
+                          </span>
                           <span className="font-bold text-red-700 flex items-center justify-center gap-1 mt-0.5">
                             <XCircle className="size-3.5" /> Failed
                           </span>
                         </div>
                         <div className="rounded border border-emerald-200 bg-white/90 p-2 shadow-xs">
-                          <span className="block text-[10px] font-semibold uppercase text-muted-foreground">Budget</span>
+                          <span className="block text-[10px] font-semibold uppercase text-muted-foreground">
+                            Budget
+                          </span>
                           <span className="font-bold text-emerald-700 flex items-center justify-center gap-1 mt-0.5">
                             <CheckCircle2 className="size-3.5" /> Released
                           </span>
@@ -405,7 +419,8 @@ function PurchasePage() {
                       <div className="rounded border border-amber-200 bg-amber-100/70 p-2 text-amber-900">
                         <p className="font-semibold text-emerald-800 flex items-center gap-1">
                           <CheckCircle2 className="size-3.5 shrink-0" />
-                          {formatINR(phase.amount ?? product.price)} returned to available mandate budget
+                          {formatINR(phase.amount ?? product.price)} returned to available mandate
+                          budget
                         </p>
                         <p className="text-amber-800 mt-1">{phase.reason}</p>
                       </div>
@@ -427,7 +442,13 @@ function PurchasePage() {
               <PolicyCheck
                 title={phase.kind === "blocked" ? "Gateway decision" : "Pre-flight policy check"}
                 checks={phase.kind === "blocked" && phase.checks ? phase.checks : preview.checks}
-                approved={phase.kind === "blocked" ? false : phase.kind === "success" ? true : preview.approved}
+                approved={
+                  phase.kind === "blocked"
+                    ? false
+                    : phase.kind === "success"
+                      ? true
+                      : preview.approved
+                }
                 reason={
                   phase.kind === "blocked"
                     ? phase.reason

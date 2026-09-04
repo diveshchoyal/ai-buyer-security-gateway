@@ -17,13 +17,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/audit")({
   head: () => ({
     meta: [
-      { title: "Audit Trail — AI Buyer Security Gateway" },
+      { title: "Audit Trail — AegisBuy" },
       {
         name: "description",
         content:
           "Append-only record of every authorization decision, budget reservation and payment outcome, streaming in real time.",
       },
-      { property: "og:title", content: "Audit Trail — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Audit Trail — AegisBuy" },
       {
         property: "og:description",
         content: "Append-only record of every gateway decision, updated in real time.",
@@ -142,7 +142,9 @@ function AuditPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-sm font-medium text-foreground">
-                          {humanize(event.action) === "—" ? "Gateway event" : humanize(event.action)}
+                          {humanize(event.action) === "—"
+                            ? "Gateway event"
+                            : humanize(event.action)}
                         </p>
                         <StatusBadge value={event.decision ?? event.action} />
                         {event.amount !== undefined ? (
@@ -156,7 +158,9 @@ function AuditPage() {
                       ) : null}
                       <p className="mt-1 flex flex-wrap gap-x-3 font-mono text-[11px] text-muted-foreground">
                         <span>{event.actor ?? "system"}</span>
-                        {event.transactionId ? <span>txn {shortId(event.transactionId)}</span> : null}
+                        {event.transactionId ? (
+                          <span>txn {shortId(event.transactionId)}</span>
+                        ) : null}
                         {event.mandateId ? <span>mandate {shortId(event.mandateId)}</span> : null}
                       </p>
                     </div>

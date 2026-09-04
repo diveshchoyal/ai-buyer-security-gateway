@@ -46,8 +46,14 @@ export async function requestAuthorization(input: PurchaseRequest): Promise<Auth
     console.error("[purchase-agent]", error);
     let payload: Record<string, unknown> | null = null;
     try {
-      if ("context" in error && typeof (error as { context?: { json: () => Promise<unknown> } }).context?.json === "function") {
-        payload = (await (error as { context: { json: () => Promise<unknown> } }).context.json()) as Record<string, unknown>;
+      if (
+        "context" in error &&
+        typeof (error as { context?: { json: () => Promise<unknown> } }).context?.json ===
+          "function"
+      ) {
+        payload = (await (
+          error as { context: { json: () => Promise<unknown> } }
+        ).context.json()) as Record<string, unknown>;
       }
     } catch {
       // ignore
@@ -62,28 +68,30 @@ export async function requestAuthorization(input: PurchaseRequest): Promise<Auth
           label: "Mandate active",
           passed: !["MANDATE_INACTIVE", "MANDATE_EXPIRED"].includes(errorCode ?? ""),
           detail: ["MANDATE_INACTIVE", "MANDATE_EXPIRED"].includes(errorCode ?? "")
-            ? (payload["message"] as string) ?? "Mandate inactive or expired"
+            ? ((payload["message"] as string) ?? "Mandate inactive or expired")
             : "Passed",
         },
         {
           label: "Category allowed",
           passed: errorCode !== "CATEGORY_NOT_ALLOWED",
-          detail: errorCode === "CATEGORY_NOT_ALLOWED"
-            ? (payload["message"] as string) ?? "Category not permitted"
-            : "Passed",
+          detail:
+            errorCode === "CATEGORY_NOT_ALLOWED"
+              ? ((payload["message"] as string) ?? "Category not permitted")
+              : "Passed",
         },
         {
           label: "Transaction limit",
           passed: errorCode !== "PER_TRANSACTION_LIMIT_EXCEEDED",
-          detail: errorCode === "PER_TRANSACTION_LIMIT_EXCEEDED"
-            ? (payload["message"] as string) ?? "Price exceeds single transaction limit"
-            : "Passed",
+          detail:
+            errorCode === "PER_TRANSACTION_LIMIT_EXCEEDED"
+              ? ((payload["message"] as string) ?? "Price exceeds single transaction limit")
+              : "Passed",
         },
         {
           label: "Budget available",
           passed: !["TOTAL_BUDGET_EXCEEDED", "INSUFFICIENT_BUDGET"].includes(errorCode ?? ""),
           detail: ["TOTAL_BUDGET_EXCEEDED", "INSUFFICIENT_BUDGET"].includes(errorCode ?? "")
-            ? (payload["message"] as string) ?? "Total budget exceeded"
+            ? ((payload["message"] as string) ?? "Total budget exceeded")
             : "Passed",
         },
       ];
@@ -103,9 +111,8 @@ export async function requestAuthorization(input: PurchaseRequest): Promise<Auth
   const payload = (data ?? {}) as Record<string, unknown>;
   const authorized = Boolean(
     payload["authorized"] ??
-      payload["approved"] ??
-      (typeof payload["status"] === "string" &&
-        /author|approv/i.test(payload["status"] as string)),
+    payload["approved"] ??
+    (typeof payload["status"] === "string" && /author|approv/i.test(payload["status"] as string)),
   );
 
   return {
@@ -114,7 +121,9 @@ export async function requestAuthorization(input: PurchaseRequest): Promise<Auth
     razorpay_order_id: (payload["razorpay_order_id"] ??
       payload["order_id"] ??
       payload["orderId"]) as string | undefined,
-    amount: payload["amount_paise"] ? Number(payload["amount_paise"]) / 100 : (payload["amount"] as number | undefined),
+    amount: payload["amount_paise"]
+      ? Number(payload["amount_paise"]) / 100
+      : (payload["amount"] as number | undefined),
     currency: (payload["currency"] as string | undefined) ?? "INR",
     reason: (payload["reason"] ?? payload["message"] ?? payload["error"]) as string | undefined,
     checks: payload["checks"] as AuthorizationResult["checks"],
@@ -152,8 +161,14 @@ export async function verifyPayment(input: VerifyPaymentInput): Promise<Verifica
     console.error("[verify-payment]", error);
     let payload: Record<string, unknown> | null = null;
     try {
-      if ("context" in error && typeof (error as { context?: { json: () => Promise<unknown> } }).context?.json === "function") {
-        payload = (await (error as { context: { json: () => Promise<unknown> } }).context.json()) as Record<string, unknown>;
+      if (
+        "context" in error &&
+        typeof (error as { context?: { json: () => Promise<unknown> } }).context?.json ===
+          "function"
+      ) {
+        payload = (await (
+          error as { context: { json: () => Promise<unknown> } }
+        ).context.json()) as Record<string, unknown>;
       }
     } catch {
       // ignore
@@ -163,7 +178,8 @@ export async function verifyPayment(input: VerifyPaymentInput): Promise<Verifica
       return {
         success: false,
         status: (payload["status"] as string) ?? "failed",
-        reason: (payload["message"] ?? payload["error_code"] ?? payload["reason"]) as string | undefined,
+        reason: (payload["message"] ?? payload["error_code"] ?? payload["reason"]) as
+          string | undefined,
         budget_released: Boolean(payload["budget_released"]),
         raw: payload,
       };
@@ -176,7 +192,9 @@ export async function verifyPayment(input: VerifyPaymentInput): Promise<Verifica
   const payload = (data ?? {}) as Record<string, unknown>;
   const status = payload["status"] as string | undefined;
   return {
-    success: Boolean(payload["success"] ?? payload["verified"] ?? /success|captur|paid/i.test(status ?? "")),
+    success: Boolean(
+      payload["success"] ?? payload["verified"] ?? /success|captur|paid/i.test(status ?? ""),
+    ),
     status,
     reason: (payload["reason"] ?? payload["message"]) as string | undefined,
     budget_released: Boolean(payload["budget_released"]),

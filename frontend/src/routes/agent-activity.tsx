@@ -31,13 +31,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/agent-activity")({
   head: () => ({
     meta: [
-      { title: "Agent Activity — AI Buyer Security Gateway" },
+      { title: "Agent Activity — AegisBuy" },
       {
         name: "description",
         content:
           "Trace every autonomous shopping decision from agent reasoning to gate authorization and settlement outcomes in real time.",
       },
-      { property: "og:title", content: "Agent Activity — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Agent Activity — AegisBuy" },
       {
         property: "og:description",
         content: "Lifecycle of AI shopper decisions, updated in real time.",
@@ -48,7 +48,13 @@ export const Route = createFileRoute("/agent-activity")({
 });
 
 type ActivityFilter = "All" | "Simulated" | "Verified Real" | "Declined" | "Gate Blocked";
-const filters: readonly ActivityFilter[] = ["All", "Simulated", "Verified Real", "Declined", "Gate Blocked"];
+const filters: readonly ActivityFilter[] = [
+  "All",
+  "Simulated",
+  "Verified Real",
+  "Declined",
+  "Gate Blocked",
+];
 
 interface GroupedActivity {
   id: string;
@@ -69,8 +75,8 @@ interface GroupedActivity {
   amount?: number | undefined;
   // Step 3: Settlement
   settlementEvent?: AuditEvent | undefined;
-  settlementOutcome?: "simulated_success" | "real_success" | "failed" | "pending";
-  isSimulated?: boolean;
+  settlementOutcome?: "simulated_success" | "real_success" | "failed" | "pending" | undefined;
+  isSimulated?: boolean | undefined;
   razorpayOrderId?: string | undefined;
   razorpayPaymentId?: string | undefined;
   failureReason?: string | undefined;
@@ -95,7 +101,11 @@ function AgentActivityPage() {
   useSecurityRealtime();
 
   const enabled = isSupabaseConfigured;
-  const { data: auditData, isPending: isAuditPending, error: auditError } = useQuery({
+  const {
+    data: auditData,
+    isPending: isAuditPending,
+    error: auditError,
+  } = useQuery({
     ...auditQuery,
     enabled,
   });
@@ -168,8 +178,7 @@ function AgentActivityPage() {
       const settlementEvent = simSuccess ?? realSuccess ?? paymentFail;
 
       const meta = (gateEvent?.raw?.["metadata"] ?? settlementEvent?.raw?.["metadata"]) as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
       const productId = (meta?.["product_id"] as string) ?? undefined;
       const mandateId = gateEvent?.mandateId ?? sortedEvents[0]?.mandateId;
       const amount = gateEvent?.amount ?? settlementEvent?.amount;
@@ -185,16 +194,15 @@ function AgentActivityPage() {
         settlementOutcome = "pending";
       }
 
-      const isSimulated = settlementOutcome === "simulated_success" || isSimulatedEvent(settlementEvent);
+      const isSimulated =
+        settlementOutcome === "simulated_success" || isSimulatedEvent(settlementEvent);
 
-      const rzpOrderId =
-        (settlementEvent?.raw?.["metadata"] as Record<string, unknown> | undefined)?.[
-          "razorpay_order_id"
-        ] as string | undefined;
-      const rzpPaymentId =
-        (settlementEvent?.raw?.["metadata"] as Record<string, unknown> | undefined)?.[
-          "razorpay_payment_id"
-        ] as string | undefined;
+      const rzpOrderId = (
+        settlementEvent?.raw?.["metadata"] as Record<string, unknown> | undefined
+      )?.["razorpay_order_id"] as string | undefined;
+      const rzpPaymentId = (
+        settlementEvent?.raw?.["metadata"] as Record<string, unknown> | undefined
+      )?.["razorpay_payment_id"] as string | undefined;
 
       groups.push({
         id: txId,
@@ -352,7 +360,8 @@ function AgentActivityPage() {
       if (act.isSimulated) simulatedCount++;
       if (act.settlementOutcome === "real_success") verifiedCount++;
       if (act.agentAction === "agent_declined") declinedCount++;
-      if (act.gateAuthorized === false || act.gateEvent?.action === "purchase_rejected") blockedCount++;
+      if (act.gateAuthorized === false || act.gateEvent?.action === "purchase_rejected")
+        blockedCount++;
     }
 
     return {
@@ -384,7 +393,9 @@ function AgentActivityPage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-lg border border-border bg-card p-3.5">
             <p className="text-xs font-medium text-muted-foreground">Total Activity</p>
-            <p className="mt-1 text-xl font-semibold tabular-nums text-foreground">{metrics.total}</p>
+            <p className="mt-1 text-xl font-semibold tabular-nums text-foreground">
+              {metrics.total}
+            </p>
           </div>
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3.5">
             <p className="flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
@@ -548,9 +559,7 @@ function ActivityCard({ activity }: { activity: GroupedActivity }) {
         <div
           className={cn(
             "rounded-md border p-3 text-xs",
-            isDeclined
-              ? "border-muted bg-muted/20"
-              : "border-border bg-card",
+            isDeclined ? "border-muted bg-muted/20" : "border-border bg-card",
           )}
         >
           <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-border/60">
@@ -581,7 +590,9 @@ function ActivityCard({ activity }: { activity: GroupedActivity }) {
             <p className="text-foreground">
               <strong className="text-muted-foreground font-medium">Reason: </strong>
               {activity.agentReason ??
-                (isDeclined ? "Agent decided not to proceed." : "Agent selected product for purchase.")}
+                (isDeclined
+                  ? "Agent decided not to proceed."
+                  : "Agent selected product for purchase.")}
             </p>
           </div>
         </div>
@@ -622,7 +633,9 @@ function ActivityCard({ activity }: { activity: GroupedActivity }) {
 
           <div className="mt-2 space-y-1.5">
             {isDeclined ? (
-              <p className="text-muted-foreground italic">Gate check skipped because agent declined purchase.</p>
+              <p className="text-muted-foreground italic">
+                Gate check skipped because agent declined purchase.
+              </p>
             ) : (
               <>
                 <p className="text-foreground">
@@ -661,7 +674,10 @@ function ActivityCard({ activity }: { activity: GroupedActivity }) {
           <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-border/60">
             <span className="flex items-center gap-1.5 font-medium text-foreground">
               {activity.isSimulated ? (
-                <FlaskConical className="size-3.5 text-amber-600 dark:text-amber-400" aria-hidden="true" />
+                <FlaskConical
+                  className="size-3.5 text-amber-600 dark:text-amber-400"
+                  aria-hidden="true"
+                />
               ) : activity.settlementOutcome === "real_success" ? (
                 <Receipt className="size-3.5 text-emerald-600" aria-hidden="true" />
               ) : activity.settlementOutcome === "failed" ? (
@@ -720,15 +736,16 @@ function ActivityCard({ activity }: { activity: GroupedActivity }) {
               </>
             ) : activity.settlementOutcome === "failed" ? (
               <>
-                <p className="text-rose-900 dark:text-rose-300 font-medium">
-                  Payment Failed
-                </p>
+                <p className="text-rose-900 dark:text-rose-300 font-medium">Payment Failed</p>
                 <p className="text-muted-foreground text-[11px]">
-                  {activity.failureReason ?? "Charge rejected on payment rail. Budget reservation released."}
+                  {activity.failureReason ??
+                    "Charge rejected on payment rail. Budget reservation released."}
                 </p>
               </>
             ) : (
-              <p className="text-muted-foreground italic">Authorized by gate; awaiting payment checkout.</p>
+              <p className="text-muted-foreground italic">
+                Authorized by gate; awaiting payment checkout.
+              </p>
             )}
           </div>
         </div>

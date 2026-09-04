@@ -66,7 +66,14 @@ function Wordmark() {
       <span className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
         <ShieldCheck className="size-4" aria-hidden="true" />
       </span>
-      <span className="text-sm font-semibold tracking-tight text-foreground">AI Buyer</span>
+      <div className="flex flex-col">
+        <span className="text-sm font-semibold tracking-tight text-foreground leading-tight">
+          AegisBuy
+        </span>
+        <span className="text-[10px] font-medium tracking-tight text-muted-foreground leading-none">
+          Secure Autonomous Commerce
+        </span>
+      </div>
     </div>
   );
 }
@@ -93,7 +100,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     select: (state) => {
       const path = state.location.pathname;
       if (path.startsWith("/purchase")) return "Purchase";
-      return nav.find((n) => (n.to === "/" ? path === "/" : path.startsWith(n.to)))?.label ?? "Settings";
+      return (
+        nav.find((n) => (n.to === "/" ? path === "/" : path.startsWith(n.to)))?.label ?? "Settings"
+      );
     },
   });
 
@@ -151,12 +160,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       ) : null}
 
-      <div className="lg:pl-60">
+      <main className="lg:pl-60">
         <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:py-8">
           <h1 className="sr-only">{title}</h1>
           {children}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -174,9 +183,7 @@ export function PageHeader({
     <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
         <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
-        {description ? (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        ) : null}
+        {description ? <p className="mt-1 text-sm text-muted-foreground">{description}</p> : null}
       </div>
       {actions}
     </div>

@@ -32,7 +32,9 @@ export function PolicyCheck({
   className,
 }: PolicyCheckProps) {
   const Icon = approved === true ? ShieldCheck : approved === false ? ShieldAlert : ShieldQuestion;
-  const label = authorizationLabel ?? (approved === true ? "APPROVED" : approved === false ? "BLOCKED" : "PENDING");
+  const label =
+    authorizationLabel ??
+    (approved === true ? "APPROVED" : approved === false ? "BLOCKED" : "PENDING");
 
   return (
     <section

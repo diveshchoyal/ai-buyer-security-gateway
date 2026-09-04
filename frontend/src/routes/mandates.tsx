@@ -14,13 +14,13 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 export const Route = createFileRoute("/mandates")({
   head: () => ({
     meta: [
-      { title: "Mandates — AI Buyer Security Gateway" },
+      { title: "Mandates — AegisBuy" },
       {
         name: "description",
         content:
           "Spending mandates issued to AI agents: budget ceilings, per-transaction caps, allowed categories and expiry.",
       },
-      { property: "og:title", content: "Mandates — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Mandates — AegisBuy" },
       {
         property: "og:description",
         content: "Budget ceilings, per-transaction caps and category rules for each agent.",

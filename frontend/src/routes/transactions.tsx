@@ -12,13 +12,13 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 export const Route = createFileRoute("/transactions")({
   head: () => ({
     meta: [
-      { title: "Transactions — AI Buyer Security Gateway" },
+      { title: "Transactions — AegisBuy" },
       {
         name: "description",
         content:
           "Authorized, settled and failed agent transactions with provider order and payment references.",
       },
-      { property: "og:title", content: "Transactions — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Transactions — AegisBuy" },
       {
         property: "og:description",
         content: "Authorized, settled and failed agent transactions in one ledger.",
@@ -33,8 +33,7 @@ function TransactionsPage() {
   const { data, isPending, error } = useQuery({ ...transactionsQuery, enabled });
   const products = useQuery({ ...productsQuery, enabled });
 
-  const nameFor = (productId?: string) =>
-    products.data?.find((p) => p.id === productId)?.name;
+  const nameFor = (productId?: string) => products.data?.find((p) => p.id === productId)?.name;
 
   return (
     <>
@@ -62,11 +61,21 @@ function TransactionsPage() {
               <table className="hidden w-full text-sm md:table">
                 <thead>
                   <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th scope="col" className="px-5 py-2.5 font-medium">When</th>
-                    <th scope="col" className="px-5 py-2.5 font-medium">Item</th>
-                    <th scope="col" className="px-5 py-2.5 text-right font-medium">Amount</th>
-                    <th scope="col" className="px-5 py-2.5 font-medium">Status</th>
-                    <th scope="col" className="px-5 py-2.5 font-medium">References</th>
+                    <th scope="col" className="px-5 py-2.5 font-medium">
+                      When
+                    </th>
+                    <th scope="col" className="px-5 py-2.5 font-medium">
+                      Item
+                    </th>
+                    <th scope="col" className="px-5 py-2.5 text-right font-medium">
+                      Amount
+                    </th>
+                    <th scope="col" className="px-5 py-2.5 font-medium">
+                      Status
+                    </th>
+                    <th scope="col" className="px-5 py-2.5 font-medium">
+                      References
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">

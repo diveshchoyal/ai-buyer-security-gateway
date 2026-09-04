@@ -45,7 +45,9 @@ async function selectAll(table: string, subject: string): Promise<Row[]> {
 export const productsQuery = queryOptions({
   queryKey: ["products"],
   queryFn: async (): Promise<Product[]> =>
-    (await selectAll("products", "products")).map(toProduct).sort((a, b) => a.name.localeCompare(b.name)),
+    (await selectAll("products", "products"))
+      .map(toProduct)
+      .sort((a, b) => a.name.localeCompare(b.name)),
 });
 
 export const mandatesQuery = queryOptions({

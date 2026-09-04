@@ -18,13 +18,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Overview — AI Buyer Security Gateway" },
+      { title: "Overview — AegisBuy" },
       {
         name: "description",
         content:
           "Live view of agent mandates, budget consumption, authorization decisions and payment outcomes.",
       },
-      { property: "og:title", content: "Overview — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Overview — AegisBuy" },
       {
         property: "og:description",
         content: "Live view of agent mandates, budgets and authorization decisions.",
@@ -83,8 +83,12 @@ function Overview() {
   const events = audit.data ?? [];
 
   const activeMandates = mandateList.filter(isMandateActive);
-  const approved = events.filter((e) => /approv|authoriz|success/i.test(e.decision ?? e.action ?? ""));
-  const blocked = events.filter((e) => /reject|block|denied|declin/i.test(e.decision ?? e.action ?? ""));
+  const approved = events.filter((e) =>
+    /approv|authoriz|success/i.test(e.decision ?? e.action ?? ""),
+  );
+  const blocked = events.filter((e) =>
+    /reject|block|denied|declin/i.test(e.decision ?? e.action ?? ""),
+  );
   const settled = txns.filter((t) => /success|captur|paid|complete/i.test(t.status ?? ""));
   const settledTotal = settled.reduce((sum, t) => sum + (t.amount ?? 0), 0);
 
@@ -154,7 +158,10 @@ function Overview() {
           ) : mandates.isPending ? (
             <TableSkeleton rows={2} />
           ) : mandateList.length === 0 ? (
-            <EmptyState title="No mandates yet" description="Mandates issued to agents appear here." />
+            <EmptyState
+              title="No mandates yet"
+              description="Mandates issued to agents appear here."
+            />
           ) : (
             mandateList.slice(0, 4).map((mandate) => {
               const budget = budgetFor(mandate, txns, reservations.data ?? []);
@@ -216,7 +223,10 @@ function Overview() {
             <ul className="divide-y divide-border">
               {events.slice(0, 6).map((event) => (
                 <li key={event.id} className="flex items-start gap-3 px-4 py-3 sm:px-5">
-                  <Activity className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <Activity
+                    className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="text-sm font-medium text-foreground">

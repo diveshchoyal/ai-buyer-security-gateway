@@ -8,7 +8,7 @@ interface RequestBody { mandate_id: string; goal: string; actor?: string; }
 interface Product { id: string; name: string; description: string | null; category: string; price_paise: number; stock: number; }
 interface Decision { action: "purchase" | "decline"; product_id?: string; reason: string; }
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const response = (data: unknown, status = 200) => new Response(JSON.stringify(data), {
   status, headers: { ...corsHeaders, "Content-Type": "application/json" },

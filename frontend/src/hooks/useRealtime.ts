@@ -13,9 +13,7 @@ function subscribeChannel(): RealtimeChannel | null {
   if (!supabase) return null;
 
   // Check if a channel with this topic already exists in the client
-  const existing = supabase.getChannels().find(
-    (c) => c.topic === "realtime:security-gateway"
-  );
+  const existing = supabase.getChannels().find((c) => c.topic === "realtime:security-gateway");
 
   // If a channel already exists and is joined/joining, reuse it safely without re-attaching listeners
   if (existing && (existing.state === "joined" || existing.state === "joining")) {
@@ -94,4 +92,3 @@ export function useSecurityRealtime() {
     };
   }, [queryClient]);
 }
-

@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — AI Buyer Security Gateway" },
+      { title: "Settings — AegisBuy" },
       {
         name: "description",
         content:
           "Environment configuration, payment mode and the security model behind agent purchase authorization.",
       },
-      { property: "og:title", content: "Settings — AI Buyer Security Gateway" },
+      { property: "og:title", content: "Settings — AegisBuy" },
       {
         property: "og:description",
         content: "Environment configuration and the gateway's security model.",
@@ -60,9 +60,7 @@ function ConfigRow({
 }
 
 function SettingsPage() {
-  const maskedKey = razorpayKeyId
-    ? `${razorpayKeyId.slice(0, 8)}…`
-    : undefined;
+  const maskedKey = razorpayKeyId ? `${razorpayKeyId.slice(0, 8)}…` : undefined;
 
   return (
     <>
@@ -99,12 +97,16 @@ function SettingsPage() {
           <div className="flex items-center justify-between gap-3">
             <span className="text-muted-foreground">Mode</span>
             <span className="font-medium text-foreground">
-              {razorpayKeyId?.startsWith("rzp_test") ? "Test mode" : isRazorpayConfigured ? "Live key detected" : "Not configured"}
+              {razorpayKeyId?.startsWith("rzp_test")
+                ? "Test mode"
+                : isRazorpayConfigured
+                  ? "Live key detected"
+                  : "Not configured"}
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Orders are created server-side and the payment signature is verified server-side before a
-            transaction is marked successful. The browser only ever receives an order id.
+            Orders are created server-side and the payment signature is verified server-side before
+            a transaction is marked successful. The browser only ever receives an order id.
           </p>
         </Panel>
 
@@ -120,12 +122,12 @@ function SettingsPage() {
               database transaction that reserves the budget.
             </li>
             <li>
-              <span className="font-medium text-foreground">Idempotency.</span> Each attempt carries a
-              unique key so retries cannot double-charge or double-reserve.
+              <span className="font-medium text-foreground">Idempotency.</span> Each attempt carries
+              a unique key so retries cannot double-charge or double-reserve.
             </li>
             <li>
-              <span className="font-medium text-foreground">Immutable audit.</span> Every decision is
-              appended to the audit log and streamed to this interface in real time.
+              <span className="font-medium text-foreground">Immutable audit.</span> Every decision
+              is appended to the audit log and streamed to this interface in real time.
             </li>
           </ul>
         </Panel>

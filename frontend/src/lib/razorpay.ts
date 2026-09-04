@@ -27,7 +27,8 @@ declare global {
 let scriptPromise: Promise<void> | null = null;
 
 function loadScript(): Promise<void> {
-  if (typeof window === "undefined") return Promise.reject(new Error("Checkout requires a browser."));
+  if (typeof window === "undefined")
+    return Promise.reject(new Error("Checkout requires a browser."));
   if (window.Razorpay) return Promise.resolve();
   if (scriptPromise) return scriptPromise;
 
@@ -60,7 +61,7 @@ export async function openCheckout(options: CheckoutOptions): Promise<void> {
     // passed only for display consistency.
     ...(options.amount !== undefined ? { amount: Math.round(options.amount * 100) } : {}),
     currency: options.currency ?? "INR",
-    name: "AI Buyer Security Gateway",
+    name: "AegisBuy",
     description: options.productName,
     handler: (response: unknown) => {
       options.onSuccess(

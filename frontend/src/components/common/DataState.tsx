@@ -20,10 +20,7 @@ export function ErrorState({ error, className }: { error: unknown; className?: s
   return (
     <div
       role="alert"
-      className={cn(
-        "flex flex-col items-center gap-2 px-6 py-12 text-center",
-        className,
-      )}
+      className={cn("flex flex-col items-center gap-2 px-6 py-12 text-center", className)}
     >
       <AlertTriangle className="size-5 text-amber-600" aria-hidden="true" />
       <p className="text-sm font-medium text-foreground">Data unavailable</p>
@@ -47,9 +44,7 @@ export function EmptyState({
     <div className={cn("flex flex-col items-center gap-2 px-6 py-12 text-center", className)}>
       <Inbox className="size-5 text-muted-foreground" aria-hidden="true" />
       <p className="text-sm font-medium text-foreground">{title}</p>
-      {description ? (
-        <p className="max-w-md text-sm text-muted-foreground">{description}</p>
-      ) : null}
+      {description ? <p className="max-w-md text-sm text-muted-foreground">{description}</p> : null}
       {action}
     </div>
   );

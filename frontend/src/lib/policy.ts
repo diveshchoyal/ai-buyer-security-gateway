@@ -1,4 +1,10 @@
-import { isMandateActive, type Mandate, type Product, type Reservation, type Transaction } from "./types";
+import {
+  isMandateActive,
+  type Mandate,
+  type Product,
+  type Reservation,
+  type Transaction,
+} from "./types";
 import { formatINR } from "./format";
 
 export interface PolicyCheckItem {

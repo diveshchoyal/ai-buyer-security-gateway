@@ -52,12 +52,22 @@ export interface Product {
 }
 
 export function toProduct(row: Row): Product {
-  const paise = num(row, ["price_paise", "price", "amount_paise", "price_inr", "amount", "unit_price"]);
-  const price = row["price_paise"] !== undefined && row["price_paise"] !== null
-    ? Number(row["price_paise"]) / 100
-    : paise;
+  const paise = num(row, [
+    "price_paise",
+    "price",
+    "amount_paise",
+    "price_inr",
+    "amount",
+    "unit_price",
+  ]);
+  const price =
+    row["price_paise"] !== undefined && row["price_paise"] !== null
+      ? Number(row["price_paise"]) / 100
+      : paise;
 
-  const isActive = row["active"] === true || (row["active"] !== false && /active|available/i.test(String(row["status"] ?? "")));
+  const isActive =
+    row["active"] === true ||
+    (row["active"] !== false && /active|available/i.test(String(row["status"] ?? "")));
 
   return {
     id: str(row, ["id", "product_id", "uuid"]) ?? "",
@@ -87,16 +97,28 @@ export interface Mandate {
 }
 
 export function toMandate(row: Row): Mandate {
-  const totalBudgetPaise = num(row, ["max_total_paise", "total_budget", "budget_limit", "budget", "max_budget"]);
-  const perTxPaise = num(row, ["max_transaction_paise", "per_transaction_limit", "transaction_limit"]);
-  
-  const totalBudget = row["max_total_paise"] !== undefined && row["max_total_paise"] !== null
-    ? Number(row["max_total_paise"]) / 100
-    : totalBudgetPaise;
-    
-  const perTransactionLimit = row["max_transaction_paise"] !== undefined && row["max_transaction_paise"] !== null
-    ? Number(row["max_transaction_paise"]) / 100
-    : perTxPaise;
+  const totalBudgetPaise = num(row, [
+    "max_total_paise",
+    "total_budget",
+    "budget_limit",
+    "budget",
+    "max_budget",
+  ]);
+  const perTxPaise = num(row, [
+    "max_transaction_paise",
+    "per_transaction_limit",
+    "transaction_limit",
+  ]);
+
+  const totalBudget =
+    row["max_total_paise"] !== undefined && row["max_total_paise"] !== null
+      ? Number(row["max_total_paise"]) / 100
+      : totalBudgetPaise;
+
+  const perTransactionLimit =
+    row["max_transaction_paise"] !== undefined && row["max_transaction_paise"] !== null
+      ? Number(row["max_transaction_paise"]) / 100
+      : perTxPaise;
 
   return {
     id: str(row, ["id", "mandate_id", "uuid"]) ?? "",
@@ -136,9 +158,10 @@ export interface Transaction {
 }
 
 export function toTransaction(row: Row): Transaction {
-  const amount = row["amount_paise"] !== undefined && row["amount_paise"] !== null
-    ? Number(row["amount_paise"]) / 100
-    : num(row, ["amount", "total", "price", "amount_inr"]);
+  const amount =
+    row["amount_paise"] !== undefined && row["amount_paise"] !== null
+      ? Number(row["amount_paise"]) / 100
+      : num(row, ["amount", "total", "price", "amount_inr"]);
 
   return {
     id: str(row, ["id", "transaction_id", "uuid"]) ?? "",
@@ -171,9 +194,10 @@ export interface AuditEvent {
 }
 
 export function toAuditEvent(row: Row): AuditEvent {
-  const amount = row["amount_paise"] !== undefined && row["amount_paise"] !== null
-    ? Number(row["amount_paise"]) / 100
-    : num(row, ["amount", "value", "amount_inr"]);
+  const amount =
+    row["amount_paise"] !== undefined && row["amount_paise"] !== null
+      ? Number(row["amount_paise"]) / 100
+      : num(row, ["amount", "value", "amount_inr"]);
 
   return {
     id: str(row, ["id", "audit_id", "uuid"]) ?? crypto.randomUUID(),
@@ -201,9 +225,10 @@ export interface Reservation {
 }
 
 export function toReservation(row: Row): Reservation {
-  const amount = row["amount_paise"] !== undefined && row["amount_paise"] !== null
-    ? Number(row["amount_paise"]) / 100
-    : num(row, ["amount", "reserved_amount", "value"]);
+  const amount =
+    row["amount_paise"] !== undefined && row["amount_paise"] !== null
+      ? Number(row["amount_paise"]) / 100
+      : num(row, ["amount", "reserved_amount", "value"]);
 
   return {
     id: str(row, ["id", "reservation_id"]) ?? "",
@@ -224,6 +249,7 @@ export function toneFor(value?: string): Tone {
   if (!v) return "neutral";
   if (/(approve|success|succeed|captur|complete|paid|active|allow|pass)/.test(v)) return "approved";
   if (/(reject|block|fail|denied|declin|error|revok|expired|cancel)/.test(v)) return "rejected";
-  if (/(pending|reserved|authoriz|initiat|process|requested|created|await)/.test(v)) return "pending";
+  if (/(pending|reserved|authoriz|initiat|process|requested|created|await)/.test(v))
+    return "pending";
   return "neutral";
 }

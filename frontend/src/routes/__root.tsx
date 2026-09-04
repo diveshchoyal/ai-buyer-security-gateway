@@ -79,11 +79,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AI Buyer Security Gateway" },
-      { name: "description", content: "Policy-enforced payment authorization for autonomous AI buying agents." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "AI Buyer Security Gateway" },
-      { property: "og:description", content: "Policy-enforced payment authorization for autonomous AI buying agents." },
+      { title: "AegisBuy — Secure Autonomous Commerce" },
+      {
+        name: "description",
+        content:
+          "A database-enforced spending gate for autonomous AI purchasing agents on Razorpay.",
+      },
+      { name: "author", content: "AegisBuy" },
+      { property: "og:title", content: "AegisBuy — Secure Autonomous Commerce" },
+      {
+        property: "og:description",
+        content:
+          "A database-enforced spending gate for autonomous AI purchasing agents on Razorpay.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
