@@ -52,7 +52,10 @@ export const productsQuery = queryOptions({
 
 export const mandatesQuery = queryOptions({
   queryKey: ["mandates"],
-  queryFn: async (): Promise<Mandate[]> => (await selectAll("mandates", "mandates")).map(toMandate),
+  queryFn: async (): Promise<Mandate[]> =>
+    (await selectAll("mandates", "mandates"))
+      .map(toMandate)
+      .sort((a, b) => (a.agent ?? a.id).localeCompare(b.agent ?? b.id)),
 });
 
 export const transactionsQuery = queryOptions({
