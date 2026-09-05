@@ -6,6 +6,13 @@ A database-enforced spending gate for autonomous AI purchasing agents on Razorpa
 
 ---
 
+## 🚀 Live Demo & Pitch Video
+
+- **Live Demo**: https://clash-ought-pacific.ngrok-free.dev
+- **5-Minute Pitch Video**: https://drive.google.com/file/d/1Od-W5oGQFHD-fxjYmazOdZDt1wtVUVvA/view
+
+---
+
 ## The Problem
 
 Giving an autonomous AI agent direct access to payment credentials or an unrestricted checkout API creates an unacceptable financial liability. LLMs are vulnerable to prompt injection, hallucinated product attributes, and runaway decision loops, meaning that asking "the agent to promise to stay within budget" is not a security boundary. If the enforcement layer lives inside the agent prompt or client-side application code, any compromised or erratic model execution can drain funds instantly.
